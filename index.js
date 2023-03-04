@@ -1,7 +1,9 @@
 const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, Events, StringSelectMenuBuilder } = require('discord.js');
 const axios = require('axios');
+const fs = require('fs');
 const client = new Discord.Client({intents: [35565]});
 
 const tree = new SlashCommandBuilder()
@@ -61,14 +63,44 @@ client.on('interactionCreate', async (interaction) => {
       .setDescription('Menu that integrates with the BASEL API.')
       .setThumbnail('https://cdn.discordapp.com/attachments/1074487980045115393/1081575553724854412/logo-color.png')
       .addFields(
-        { name: 'Navigate using the buttons', value: 'getAll, searchPublic, fromUser' },
+        { name: 'Navigate using the select menu.', value: 'getAll, searchPublic, fromUser' },
       )
-      .setImage('https://cdn.discordapp.com/attachments/1074487980045115393/1081575553724854412/logo-color.png')
       .setTimestamp()
       .setFooter({ text: 'Reduce Reuse Recycle', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
-    interaction.reply({ embeds: [exampleEmbed], ephemeral: true });
+    const row = new ActionRowBuilder()
+			.addComponents(
+				new StringSelectMenuBuilder()
+					.setCustomId('select')
+					.setPlaceholder('Nothing selected')
+					.addOptions(
+						{
+							label: 'getAll',
+							description: 'Gets all items in a catagory',
+							value: 'first_option',
+						},
+						{
+							label: 'searchPublic',
+							description: 'Gets all items containing a keyword',
+							value: 'second_option',
+						},
+            {
+							label: 'fromUser',
+							description: 'Gets all items from a user',
+							value: 'third_option',
+						},
+					),
+			);
+    interaction.reply({ embeds: [exampleEmbed], components: [row], ephemeral: true });
   }
 });
 
-const token = '';
-client.login(token);
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isButton()) return;
+  interaction.reply({ content: 'clicked', ephemeral: true });
+});
+
+fs.readFile('token.txt', 'utf8', function (err, data) {
+  if (err) throw err;
+  const token = data.trim();
+  client.login(token);
+});
