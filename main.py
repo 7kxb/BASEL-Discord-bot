@@ -1,7 +1,9 @@
 import discord
 import requests
 
-TOKEN = ''
+file = open('token.txt', 'r')
+TOKEN = file.read()
+file.close()
 
 client = discord.Client()
 
@@ -23,17 +25,18 @@ async def on_message(message):
         response = requests.get(url)
         if response.status_code == 200:
             json_data = response.json()
-            for i in range(len(json_data[0])):
-                await message.reply("``\n" +
-                                    "URL: " + url + "\n" +
-                                    "ID: " + str(json_data[0][i]["id"]) + "\n" +
-                                    "Name: " + json_data[0][i]["name"] + "\n" +
-                                    "Description: " + json_data[0][i]["description"] + "\n" +
-                                    "Image: " + json_data[0][i]["image"] + "\n" +
-                                    "Seller: " + json_data[0][i]["seller"] + "\n" +
-                                    "Price: $" + str(json_data[0][i]["price"]) + "\n" +
-                                    "``")
-                await message.reply(json_data)
+            response = "```\nURL: " + url + "\n"
+            for data in json_data:
+                response += (
+                             "\nID: " + str(data["id"]) + "\n" +
+                             "Name: " + data["name"] + "\n" +
+                             "Description: " + data["description"] + "\n" +
+                             "Image: " + data["image"] + "\n" +
+                             "Seller: " + data["seller"] + "\n" +
+                             "Price: $" + str(data["price"]) + "\n"
+                            )
+            response += "```"
+            await message.reply(response)
         else:
             await message.reply("error")
 
