@@ -1,5 +1,6 @@
 import discord
 from discord import app_commands
+from discord.ext import commands
 import requests
 
 file = open('token.txt', 'r')
@@ -12,7 +13,11 @@ tree = app_commands.CommandTree(client)
 
 @tree.command(name = "menu", description = "Menu that integrates with the BASEL API.", guild=discord.Object(id=1081307027697041548))
 async def menu(interaction):
-    await interaction.response.send_message("test", ephemeral=True)
+    embed=discord.Embed(title="http://172.105.103.136/", url="http://172.105.103.136/", description="Menu that integrates with the BASEL API.", color=0x33d17a)
+    embed.set_author(name="BASEL", icon_url="https://cdn.discordapp.com/attachments/1074487980045115393/1081575553724854412/logo-color.png")
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1074487980045115393/1081575553724854412/logo-color.png")
+    embed.add_field(name="Navigate using the buttons", value="getAll, searchPublic, fromUser")
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 @tree.command(name = "getall", description = "test command", guild=discord.Object(id=1081307027697041548))
 async def getAll(interaction):
